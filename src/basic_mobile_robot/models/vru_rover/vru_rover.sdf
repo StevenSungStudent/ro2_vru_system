@@ -1,0 +1,918 @@
+<?xml version="1.0" ?>
+<sdf version='1.6'>
+  <model name='vru_rover'>
+    <pose>0.0 0.0 0.0 0.0 0.0 0.0</pose>
+    <link name="base_footprint"/>
+    <joint name="base_joint" type="fixed">
+      <parent>base_footprint</parent>
+      <child>base_link</child>
+      <pose>0 0 0 0 0 0</pose>
+    </joint>
+    <link name='base_link'>
+      <pose>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 -0 0</pose>
+        <mass>3.0</mass>
+        <inertia>
+          <ixx>0.37083</ixx>
+          <ixy>0.0</ixy>
+          <ixz>0.0</ixz>
+          <iyy>0.37083</iyy>
+          <iyz>0.0</iyz>
+          <izz>0.53333</izz>
+        </inertia>
+      </inertial>
+      <collision name='odom_fixed_joint_lump__base_link_collision'>
+        <pose>0 0 0.15 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://vru_rover/meshes/VRU_innovatie.stl</uri>
+          </mesh>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='odom_fixed_joint_lump__base_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://vru_rover/meshes/VRU_innovatie.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Grey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <!-- <visual name='odom_fixed_joint_lump__top_link_visual_1'>
+        <pose>0 0 0.114486 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.8 0.6 0.5</scale>
+            <uri>model://vru_rover/meshes/top_link.STL</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/White</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual> -->
+
+
+      <velocity_decay/>
+      <velocity_decay/>
+      <velocity_decay/>
+      <velocity_decay/>
+      <velocity_decay/>
+      <gravity>1</gravity>
+      <velocity_decay/>
+    </link>
+
+    <link name="susp_lb">
+      <pose>-0.175 0.15 0.1 0 0 0</pose>
+      <inertial>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0.000208333333333333</ixx>
+          <iyy>0.000208333333333333</iyy>
+          <izz>0.000208333333333333</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.001</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.001</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+    <joint name="susp_lb_prismatic" type="prismatic">
+      <parent>base_link</parent>
+      <child>susp_lb</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-0.0375</lower>
+          <upper>0.0375</upper>
+        </limit>
+        <dynamics>
+          <damping>100</damping>
+          <spring_stiffness>2500</spring_stiffness>
+          <spring_reference>0.05</spring_reference>
+        </dynamics>
+      </axis>
+      <physics>
+        <ode>
+          <implicit_spring_damper>1</implicit_spring_damper>
+        </ode>
+      </physics>
+    </joint>
+    
+    <link name='lb_wheel_link'>
+      <pose>-0.175 0.15 0.0215 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.414</mass>
+        <inertia>
+          <ixx>0.00068682</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00068682</iyy>
+          <iyz>0</iyz>
+          <izz>0.00097299</izz>
+        </inertia>
+      </inertial>
+      <collision name='lb_wheel_link_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://vru_rover/meshes/Wheel_vru.stl</uri>
+          </mesh>
+        </geometry>
+        <max_contacts>1</max_contacts>
+        <surface>
+          <friction>
+            <torsional>
+              <coefficient>0.25</coefficient>
+              <use_patch_radius>1</use_patch_radius>
+              <surface_radius>0.0686</surface_radius>
+            </torsional>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>0.45</mu2>
+              <fdir1>1 0 0</fdir1>
+              <slip1>0.0</slip1>
+              <slip2>0.0</slip2>
+            </ode>
+          </friction>
+          <bounce>
+            <restitution_coefficient>0</restitution_coefficient>
+            <threshold>1e6</threshold>
+          </bounce>
+          <contact>
+            <ode>
+              <min_depth>0.001</min_depth>
+              <max_vel>0.0</max_vel>
+              <kp>1.0e6</kp>
+              <kd>100.0</kd>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+      <visual name='lb_wheel_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://vru_rover/meshes/Wheel_vru.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Orange</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay/>
+    </link>
+    <joint name='lb_wheel_joint' type='revolute'>
+      <child>lb_wheel_link</child>
+      <parent>susp_lb</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+
+    <link name="susp_lf">
+      <pose>0.175 0.15 0.1 0 0 0</pose>
+      <inertial>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0.000208333333333333</ixx>
+          <iyy>0.000208333333333333</iyy>
+          <izz>0.000208333333333333</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.001</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.001</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+    <joint name="susp_lf_prismatic" type="prismatic">
+      <parent>base_link</parent>
+      <child>susp_lf</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-0.0375</lower>
+          <upper>0.0375</upper>
+        </limit>
+        <dynamics>
+          <damping>100</damping>
+          <spring_stiffness>2500</spring_stiffness>
+          <spring_reference>0.05</spring_reference>
+        </dynamics>
+      </axis>
+      <physics>
+        <ode>
+          <implicit_spring_damper>1</implicit_spring_damper>
+        </ode>
+      </physics>
+    </joint>
+    
+    <link name='lf_wheel_link'>
+      <pose>0.175 0.15 0.0215 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.414</mass>
+        <inertia>
+          <ixx>0.00068682</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00068682</iyy>
+          <iyz>0</iyz>
+          <izz>0.00097299</izz>
+        </inertia>
+      </inertial>
+      <collision name='lf_wheel_link_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://vru_rover/meshes/Wheel_vru.stl</uri>
+          </mesh>
+        </geometry>
+        <max_contacts>1</max_contacts>
+        <surface>
+          <friction>
+            <torsional>
+              <coefficient>0.25</coefficient>
+              <use_patch_radius>1</use_patch_radius>
+              <surface_radius>0.0686</surface_radius>
+            </torsional>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>0.45</mu2>
+              <fdir1>1 0 0</fdir1>
+              <slip1>0.0</slip1>
+              <slip2>0.0</slip2>
+            </ode>
+          </friction>
+          <bounce>
+            <restitution_coefficient>0</restitution_coefficient>
+            <threshold>1e6</threshold>
+          </bounce>
+          <contact>
+            <ode>
+              <min_depth>0.001</min_depth>
+              <max_vel>0.0</max_vel>
+              <kp>1.0e6</kp>
+              <kd>100.0</kd>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+      <visual name='lf_wheel_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://vru_rover/meshes/Wheel_vru.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Orange</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay/>
+    </link>
+    <joint name='lf_wheel_joint' type='revolute'>
+      <child>lf_wheel_link</child>
+      <parent>susp_lf</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+
+    <link name="susp_rb">
+      <pose>-0.175 -0.15 0.1 0 0 0</pose>
+      <inertial>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0.000208333333333333</ixx>
+          <iyy>0.000208333333333333</iyy>
+          <izz>0.000208333333333333</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.001</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.001</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+    <joint name="susp_rb_prismatic" type="prismatic">
+      <parent>base_link</parent>
+      <child>susp_rb</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-0.0375</lower>
+          <upper>0.0375</upper>
+        </limit>
+        <dynamics>
+          <damping>100</damping>
+          <spring_stiffness>2500</spring_stiffness>
+          <spring_reference>0.05</spring_reference>
+        </dynamics>
+      </axis>
+      <physics>
+        <ode>
+          <implicit_spring_damper>1</implicit_spring_damper>
+        </ode>
+      </physics>
+    </joint>
+    <link name='rb_wheel_link'>
+      <pose>-0.175 -0.15 0.0215 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.414</mass>
+        <inertia>
+          <ixx>0.00068682</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00068682</iyy>
+          <iyz>0</iyz>
+          <izz>0.00097299</izz>
+        </inertia>
+      </inertial>
+      <collision name='rb_wheel_link_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://vru_rover/meshes/Wheel_vru.stl</uri>
+          </mesh>
+        </geometry>
+        <max_contacts>1</max_contacts>
+        <surface>
+          <friction>
+            <torsional>
+              <coefficient>0.25</coefficient>
+              <use_patch_radius>1</use_patch_radius>
+              <surface_radius>0.0686</surface_radius>
+            </torsional>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>0.45</mu2>
+              <fdir1>1 0 0</fdir1>
+              <slip1>0.0</slip1>
+              <slip2>0.0</slip2>
+            </ode>
+          </friction>
+          <bounce>
+            <restitution_coefficient>0</restitution_coefficient>
+            <threshold>1e6</threshold>
+          </bounce>
+          <contact>
+            <ode>
+              <min_depth>0.001</min_depth>
+              <kp>1e8</kp>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+      <visual name='rb_wheel_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://vru_rover/meshes/Wheel_vru.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Orange</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay/>
+    </link>
+    <joint name='rb_wheel_joint' type='revolute'>
+      <child>rb_wheel_link</child>
+      <parent>susp_rb</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+    <link name="susp_rf">
+      <pose>0.175 -0.15 0.1 0 0 0</pose>
+      <inertial>
+        <mass>0.5</mass>
+        <inertia>
+          <ixx>0.000208333333333333</ixx>
+          <iyy>0.000208333333333333</iyy>
+          <izz>0.000208333333333333</izz>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyz>0</iyz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.001</size>
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+          <box>
+            <size>0.01 0.01 0.001</size>
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+            <name>Gazebo/Black</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+    <joint name="susp_rf_prismatic" type="prismatic">
+      <parent>base_link</parent>
+      <child>susp_rf</child>
+      <axis>
+        <xyz>0 0 -1</xyz>
+        <limit>
+          <lower>-0.0375</lower>
+          <upper>0.0375</upper>
+        </limit>
+        <dynamics>
+          <damping>100</damping>
+          <spring_stiffness>2500</spring_stiffness>
+          <spring_reference>0.05</spring_reference>
+        </dynamics>
+      </axis>
+      <physics>
+        <ode>
+          <implicit_spring_damper>1</implicit_spring_damper>
+        </ode>
+      </physics>
+    </joint>
+
+    <link name='rf_wheel_link'>
+      <pose>0.175 -0.15 0.0215 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0 0 0 0</pose>
+        <mass>0.414</mass>
+        <inertia>
+          <ixx>0.00068682</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.00068682</iyy>
+          <iyz>0</iyz>
+          <izz>0.00097299</izz>
+        </inertia>
+      </inertial>
+      <collision name='rf_wheel_link_collision'>
+        <pose>0 0 0 0 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://vru_rover/meshes/Wheel_vru.stl</uri>
+          </mesh>
+        </geometry>
+        <max_contacts>1</max_contacts>
+        <surface>
+          <friction>
+            <torsional>
+              <coefficient>0.25</coefficient>
+              <use_patch_radius>1</use_patch_radius>
+              <surface_radius>0.0686</surface_radius>
+            </torsional>
+            <ode>
+              <mu>1.0</mu>
+              <mu2>0.45</mu2>
+              <fdir1>1 0 0</fdir1>
+              <slip1>0.0</slip1>
+              <slip2>0.0</slip2>
+            </ode>
+          </friction>
+          <bounce>
+            <restitution_coefficient>0</restitution_coefficient>
+            <threshold>1e6</threshold>
+          </bounce>
+          <contact>
+            <ode>
+              <min_depth>0.001</min_depth>
+              <max_vel>0.0</max_vel>
+              <kp>1.0e6</kp>
+              <kd>100.0</kd>
+            </ode>
+          </contact>
+        </surface>
+      </collision>
+      <visual name='rf_wheel_link_visual'>
+        <pose>0 0 0 0 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://vru_rover/meshes/Wheel_vru.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Orange</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <gravity>1</gravity>
+      <velocity_decay/>
+    </link>
+    <joint name='rf_wheel_joint' type='revolute'>
+      <child>rf_wheel_link</child>
+      <parent>susp_rf</parent>
+      <axis>
+        <xyz>0 1 0</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+        <use_parent_model_frame>1</use_parent_model_frame>
+      </axis>
+    </joint>
+      <!-- *********************** IMU SENSOR SETUP **************************  -->
+    <link name="imu_link">
+      <gravity>true</gravity>
+      <sensor name="bmb_imu" type="imu">
+        <always_on>true</always_on>
+        <update_rate>100</update_rate>
+        <visualize>true</visualize>
+        <imu>
+          <orientation>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>2e-3</stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>2e-3</stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>2e-3</stddev>
+              </noise>
+            </z>
+          </orientation>
+          <angular_velocity>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>2e-4</stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>2e-4</stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>2e-4</stddev>
+              </noise>
+            </z>
+          </angular_velocity>
+          <linear_acceleration>
+            <x>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>1.7e-2</stddev>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>1.7e-2</stddev>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>1.7e-2</stddev>
+              </noise>
+            </z>
+          </linear_acceleration>
+        </imu>
+        <plugin name="vru_imu" filename="libgazebo_ros_imu_sensor.so">
+          <initial_orientation_as_reference>false</initial_orientation_as_reference>
+          <frame_name>imu_link</frame_name>
+          <ros>
+            <namespace>/imu</namespace>
+            <remapping>~/out:=data</remapping>
+          </ros>
+        </plugin>
+      </sensor>
+    </link>
+
+    <!-- *********************** GPS SETUP *********************************  -->
+    <link name="gps_link">
+      <sensor name="rtk_gps" type="gps">
+        <always_on>1</always_on>
+        <update_rate>15.0</update_rate>
+        <gps>
+          <position_sensing>
+            <horizontal>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>1</stddev>
+              </noise>
+            </horizontal>
+            <vertical>
+              <noise type="gaussian">
+                <mean>0.0</mean>
+                <stddev>1</stddev>
+              </noise>
+            </vertical>
+          </position_sensing>
+        </gps>
+      
+        <plugin name="vru_gps" filename="libgazebo_ros_gps_sensor.so">
+          <ros>
+            <remapping>~/out:=gps/fix</remapping>
+          </ros>
+        </plugin>
+      </sensor>
+    </link>
+
+    <!-- ****************************** LIDAR *****************************    -->
+    <link name="lidar_link">    
+      <inertial>
+        <pose>0.0 0 0.12 0 0 0</pose>
+        <inertia>
+          <ixx>0.001</ixx>
+          <ixy>0.000</ixy>
+          <ixz>0.000</ixz>
+          <iyy>0.001</iyy>
+          <iyz>0.000</iyz>
+          <izz>0.001</izz>
+        </inertia>
+        <mass>0.114</mass>
+      </inertial>
+
+      <collision name="lidar_collision">
+        <pose>0.0 0 0.12 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.0508</radius>
+            <length>0.05</length>
+          </cylinder>
+        </geometry>
+      </collision>
+
+      <visual name="lidar_visual">
+        <pose>0.0 0 0.12 0 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.0508</radius>
+            <length>0.05</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0.0 0.0 0.0 1.0</ambient>
+          <diffuse>0.0 0.0 0.0 1.0</diffuse>
+          <specular>0.0 0.0 0.0 1.0</specular>
+          <emissive>0.0 0.0 0.0 1.0</emissive>
+        </material>
+      </visual>
+
+      <sensor name="lidar" type="ray">
+        <pose>0.0 0 0.12 0 0 0</pose>
+        <always_on>true</always_on>
+        <visualize>false</visualize>
+        <update_rate>10</update_rate>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>512</samples>
+              <resolution>1.000000</resolution>
+              <min_angle>-3.14159</min_angle>
+              <max_angle>3.14159</max_angle>
+            </horizontal>
+          </scan>
+          <range>
+            <min>0.3</min>
+            <max>15.0</max>
+            <resolution>0.015</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+          </noise>
+        </ray>
+        <plugin name="scan" filename="libgazebo_ros_ray_sensor.so">
+          <ros>
+            <remapping>~/out:=scan</remapping>
+          </ros>
+          <output_type>sensor_msgs/LaserScan</output_type>
+          <frame_name>lidar_link</frame_name>
+        </plugin>
+      </sensor>
+    </link>
+  
+
+    <joint name="imu_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>imu_link</child>
+      <pose>0 0 0 0 0 0</pose>
+    </joint>  
+
+    <joint name="gps_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>gps_link</child>
+      <pose>0 0 0 0 0 0</pose>
+    </joint>  
+    
+    <joint name="lidar_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>lidar_link</child>
+      <pose>0 0 0 0 0 0</pose>
+    </joint>
+      <!-- *********************** WHEEL ODOMETRY ***************************    -->
+    <plugin name="vru_diff_drive" filename="libgazebo_ros_diff_drive.so">
+
+      <update_rate>100</update_rate>
+
+      <!-- wheels -->
+      <num_wheel_pairs>2</num_wheel_pairs>
+      <left_joint>lb_wheel_joint</left_joint>
+      <left_joint>lf_wheel_joint</left_joint>
+      <right_joint>rb_wheel_joint</right_joint>
+      <right_joint>rf_wheel_joint</right_joint>
+
+
+      <!-- kinematics -->
+      <wheel_separation>2.8</wheel_separation>
+      <wheel_diameter>0.20</wheel_diameter>
+
+      <!-- limits -->
+      <max_wheel_torque>10000</max_wheel_torque>
+      <max_wheel_acceleration>100.0</max_wheel_acceleration>
+
+      <!-- Receive velocity commands on this ROS topic -->
+      <command_topic>cmd_vel</command_topic>
+
+      <!-- output -->
+      <!-- When false, publish no wheel odometry data to a ROS topic -->
+      <publish_odom>true</publish_odom>
+
+      <!-- When true, publish coordinate transform from odom to base_footprint -->
+      <!-- I usually use the robot_localization package to publish this transform -->   
+      <publish_odom_tf>false</publish_odom_tf>
+      
+      <!-- When true, publish coordinate transform from base_link to the wheels -->
+      <!-- The robot_state_publisher package is often used to publish this transform -->   
+      <publish_wheel_tf>false</publish_wheel_tf>
+
+      <odometry_topic>odom</odometry_topic>
+      <odometry_frame>odom</odometry_frame>
+      <robot_base_frame>base_link</robot_base_frame>
+
+      <!-- Odometry source, 0 for ENCODER, 1 for WORLD, defaults to WORLD -->
+      <odometry_source>1</odometry_source>
+
+      <!-- Change the ROS topic we will publish the odometry data to -->
+      <ros>
+        <remapping>odom:=wheel/odometry</remapping>
+      </ros>
+
+    </plugin>
+
+  <!-- *********************** JOINT STATE PUBLISHER *********************   -->
+    
+    <plugin name="vru_joint_state" filename="libgazebo_ros_joint_state_publisher.so">
+      <ros>
+        <remapping>~/out:=joint_states</remapping>
+      </ros>
+      <update_rate>60</update_rate>
+      <joint_name>rf_wheel_joint</joint_name>
+      <joint_name>lb_wheel_joint</joint_name>
+      <joint_name>rb_wheel_joint</joint_name>
+      <joint_name>lf_wheel_joint</joint_name>
+    </plugin>   
+
+  </model>
+</sdf>

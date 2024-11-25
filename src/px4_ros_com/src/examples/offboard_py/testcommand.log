@@ -1,0 +1,2 @@
+ros2 run mavros mavros_node --ros-args --param fcu_url:=udp://:14540@  -r tf:=/px4/tf  -r tf_static:=/px4/tf_static 
+MicroXRCEAgent udp4 -p 8888

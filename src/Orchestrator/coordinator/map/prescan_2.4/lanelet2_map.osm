@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osm generator="VMB">
+  <MetaInfo format_version="2" map_version="6"/>
+  <node id="8761" lat="51.41570701570535" lon="5.883472725116275">
+    <tag k="mgrs_code" v="31UGT005000"/>
+    <tag k="local_x" v="500"/>
+    <tag k="local_y" v="0"/>
+    <tag k="ele" v="0"/>
+  </node>
+  <node id="8762" lat="51.415883698600965" lon="5.8762917751693005">
+    <tag k="mgrs_code" v="31UGT000000"/>
+    <tag k="local_x" v="0"/>
+    <tag k="local_y" v="0.0122"/>
+    <tag k="ele" v="0"/>
+  </node>
+  <node id="8763" lat="51.41574069243674" lon="5.88347484561673">
+    <tag k="mgrs_code" v="31UGT005000"/>
+    <tag k="local_x" v="500"/>
+    <tag k="local_y" v="3.75"/>
+    <tag k="ele" v="0"/>
+  </node>
+  <node id="8764" lat="51.41591726598157" lon="5.8762938835251015">
+    <tag k="mgrs_code" v="31UGT000000"/>
+    <tag k="local_x" v="0"/>
+    <tag k="local_y" v="3.75"/>
+    <tag k="ele" v="0"/>
+  </node>
+  <node id="8768" lat="51.41574069243674" lon="5.88347484561673">
+    <tag k="mgrs_code" v="31UGT005000"/>
+    <tag k="local_x" v="500"/>
+    <tag k="local_y" v="3.75"/>
+    <tag k="ele" v="0"/>
+  </node>
+  <node id="8769" lat="51.41591726598157" lon="5.8762938835251015">
+    <tag k="mgrs_code" v="31UGT000000"/>
+    <tag k="local_x" v="0"/>
+    <tag k="local_y" v="3.75"/>
+    <tag k="ele" v="0"/>
+  </node>
+  <node id="8770" lat="51.41577436916789" lon="5.883476966121304">
+    <tag k="mgrs_code" v="31UGT005000"/>
+    <tag k="local_x" v="500"/>
+    <tag k="local_y" v="7.5"/>
+    <tag k="ele" v="0"/>
+  </node>
+  <node id="8771" lat="51.41595094292424" lon="5.876295998766572">
+    <tag k="mgrs_code" v="31UGT000000"/>
+    <tag k="local_x" v="0"/>
+    <tag k="local_y" v="7.5"/>
+    <tag k="ele" v="0"/>
+  </node>
+  <way id="8765">
+    <nd ref="8761"/>
+    <nd ref="8762"/>
+    <tag k="highway" v="service"/>
+    <tag k="maxspeed" v="15"/>
+    <tag k="service" v="parking_aisle"/>
+  </way>
+  <way id="8766">
+    <nd ref="8763"/>
+    <nd ref="8764"/>
+    <tag k="highway" v="service"/>
+    <tag k="maxspeed" v="15"/>
+    <tag k="service" v="parking_aisle"/>
+  </way>
+  <way id="8772">
+    <nd ref="8768"/>
+    <nd ref="8769"/>
+    <tag k="highway" v="service"/>
+    <tag k="maxspeed" v="15"/>
+    <tag k="service" v="parking_aisle"/>
+  </way>
+  <way id="8773">
+    <nd ref="8770"/>
+    <nd ref="8771"/>
+    <tag k="highway" v="service"/>
+    <tag k="maxspeed" v="15"/>
+    <tag k="service" v="parking_aisle"/>
+  </way>
+  <relation id="8767">
+    <member type="way" role="right" ref="8765"/>
+    <member type="way" role="left" ref="8766"/>
+    <tag k="type" v="lanelet"/>
+    <tag k="subtype" v="road"/>
+    <tag k="speed_limit" v="25"/>
+    <tag k="location" v="urban"/>
+    <tag k="one_way" v="yes"/>
+  </relation>
+  <relation id="8774">
+    <member type="way" role="left" ref="8772"/>
+    <member type="way" role="right" ref="8773"/>
+    <tag k="type" v="lanelet"/>
+    <tag k="subtype" v="road"/>
+    <tag k="speed_limit" v="25"/>
+    <tag k="location" v="urban"/>
+    <tag k="one_way" v="yes"/>
+  </relation>
+</osm>

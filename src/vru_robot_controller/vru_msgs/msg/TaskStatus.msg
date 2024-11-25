@@ -1,0 +1,3 @@
+Task current_task
+bool compleated
+float32 status_id
