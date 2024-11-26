@@ -2,34 +2,30 @@
 
 import os
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription,ExecuteProcess
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, LaunchConfiguration, PythonExpression,FindExecutable
+from launch.substitutions import Command, LaunchConfiguration, PythonExpression, FindExecutable
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
 
   # Set the path to different files and folders.
-
   pkg_share = FindPackageShare(package='basic_mobile_robot').find('basic_mobile_robot')
-
   default_model_path = os.path.join(pkg_share, 'models/vru_rover_static.urdf')
-
+  default_custom_model_path = os.path.join(pkg_share, 'models/r1_rover')
   default_rviz_config_path = os.path.join(pkg_share, 'rviz/sil_sim.rviz')
-
-
+  px4_directory = os.path.expanduser('~/PX4-Autopilot')
   
   # Launch configuration variables specific to simulation
   rviz_config_file = LaunchConfiguration('rviz_config_file')
   model = LaunchConfiguration('model')
   namespace = LaunchConfiguration('namespace')
-
   use_robot_state_pub = LaunchConfiguration('use_robot_state_pub')
-
   use_sim_time = LaunchConfiguration('use_sim_time')
   use_rviz = LaunchConfiguration('use_rviz')
+  custom_model = LaunchConfiguration('custom_model')
   
   # Map fully qualified names to relative ones so the node's namespace can be prepended.
   # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
@@ -52,22 +48,22 @@ def generate_launch_description():
     default_value='False',
     description='Whether to apply a namespace to the navigation stack')
         
-
-
-
-        
   declare_model_path_cmd = DeclareLaunchArgument(
     name='model', 
     default_value=default_model_path, 
     description='Absolute path to robot urdf file')
-    
+  
+  declare_custom_model_path_cmd = DeclareLaunchArgument(
+    name='custom_model',
+    default_value=default_custom_model_path,
+    description='path to the robot sdf file (TODO might merge with other model)'
+  )
 
   declare_rviz_config_file_cmd = DeclareLaunchArgument(
     name='rviz_config_file',
     default_value=default_rviz_config_path,
     description='Full path to the RVIZ config file to use')
 
-    
   declare_use_robot_state_pub_cmd = DeclareLaunchArgument(
     name='use_robot_state_pub',
     default_value='True',
@@ -82,7 +78,11 @@ def generate_launch_description():
     name='use_sim_time',
     default_value='True',
     description='Use simulation (Gazebo) clock if true')
-
+  
+  declare_px4_model_cmd = DeclareLaunchArgument(
+      name='px4_model', default_value='gazebo-classic_r1_rover',
+      description='PX4 SITL model to simulate')
+  
 
   start_rviz_cmd = Node(
     condition=IfCondition(use_rviz),
@@ -138,6 +138,18 @@ def generate_launch_description():
     executable='task_manger_streetdrone.py',
     parameters=[{'use_sim_time': use_sim_time, }],
   )
+  
+  px4_simulation_cmd = ExecuteProcess(
+    cmd=['make', '-C', px4_directory, 'px4_sitl', LaunchConfiguration('px4_model')],
+    additional_env={
+        'GAZEBO_MODEL_PATH': 'custom_model'
+    },
+    output='screen'
+  )
+  print('HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
+  print(px4_simulation_cmd)
+
+  
   # Create the launch description and populate
   ld = LaunchDescription()
 
@@ -147,23 +159,21 @@ def generate_launch_description():
   ld.add_action(declare_use_robot_state_pub_cmd)  
   ld.add_action(declare_use_rviz_cmd) 
   ld.add_action(declare_use_sim_time_cmd)
+  ld.add_action(declare_model_path_cmd)
+  ld.add_action(declare_rviz_config_file_cmd)
+  ld.add_action(declare_custom_model_path_cmd)
+  ld.add_action(declare_px4_model_cmd)
+
+  # Adding nodes and command
+  ld.add_action(px4_simulation_cmd)
+  ld.add_action(start_rviz_cmd)
+  ld.add_action(start_robot_joint_state_publisher_cmd)
+  ld.add_action(start_robot_state_publisher_cmd)
   ld.add_action(vru_low_level_controller_cmd)
   ld.add_action(vru_high_level_controller_cmd)
   ld.add_action(orchestrator_ui_cmd)
   ld.add_action(dut_hight_level_controller_cmd)
-
-  ld.add_action(declare_model_path_cmd)
-
-  ld.add_action(declare_rviz_config_file_cmd)
-
-
-
-
-  ld.add_action(start_rviz_cmd)
-  ld.add_action(start_robot_joint_state_publisher_cmd)
-  ld.add_action(start_robot_state_publisher_cmd)
-
-
+  
 
   return ld
 
