@@ -53,8 +53,8 @@ class Task_manager : public rclcpp::Node
     void mainloop_callback()
     {
 
-      RCLCPP_INFO(this->get_logger(), "The taskID for the next task: '%d'", NextTask.task_id);
-      RCLCPP_INFO(this->get_logger(), "The start_event for the next task:'%s'", NextTask.start_event.event_type.c_str());
+      // RCLCPP_INFO(this->get_logger(), "The taskID for the next task: '%d'", NextTask.task_id);
+      // RCLCPP_INFO(this->get_logger(), "The start_event for the next task:'%s'", NextTask.start_event.event_type.c_str());
       
       if (CurrentTaskStatus.compleated == true){
         if(NextTask.start_event.event_type == "DELAY_START" )
@@ -75,7 +75,7 @@ class Task_manager : public rclcpp::Node
     }
     void topic_callback_TaskList(const vru_msgs::msg::TaskList & msg)
     {
-      RCLCPP_INFO(this->get_logger(), "Recived task list for for managing with ID: '%d'", msg.list_id);
+      // RCLCPP_INFO(this->get_logger(), "Recived task list for for managing with ID: '%d'", msg.list_id);
   
       auto temp = msg;
       reciveNewTaskList(temp);
@@ -112,7 +112,7 @@ class Task_manager : public rclcpp::Node
     // for E-STOP
     void topic_callback_Events(const vru_msgs::msg::Events & msg)
     {
-      RCLCPP_INFO(this->get_logger(), "Recived Events for for managing with task: '%d'", msg.event_id);
+      // RCLCPP_INFO(this->get_logger(), "Recived Events for for managing with task: '%d'", msg.event_id);
       //Handel Events
       auto temp = msg;
       handleEvent(temp);
@@ -120,7 +120,7 @@ class Task_manager : public rclcpp::Node
 
      void topic_callback_Status(const vru_msgs::msg::Status & msg)
     {
-      RCLCPP_INFO(this->get_logger(), "Recived Status for for managing with task: '%d'", msg.current_task_status.current_task.task_id);
+      // RCLCPP_INFO(this->get_logger(), "Recived Status for for managing with task: '%d'", msg.current_task_status.current_task.task_id);
 
               
       //Handel Status Info
@@ -151,7 +151,7 @@ class Task_manager : public rclcpp::Node
 
     void sendStatus(vru_msgs::msg::Status message) const
     {
-      RCLCPP_INFO(this->get_logger(), "Publishing to Status With ID: '%d'", message.current_task_status.current_task.task_id);
+      // RCLCPP_INFO(this->get_logger(), "Publishing to Status With ID: '%d'", message.current_task_status.current_task.task_id);
       publisher_Status->publish(message);
     }
 

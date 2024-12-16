@@ -32,8 +32,8 @@ class OffboardControl(Node):
 
     def __init__(self):
         super().__init__('offcontrol_node_mavros')
-
-
+        self.get_logger().info("TEST=====================================")
+        
         self.state = MissionState.stopped
 
         
@@ -62,6 +62,8 @@ class OffboardControl(Node):
             '/mavros/battery',
             self.battery_callback,
             qos_profile)
+        
+        self.get_logger().info("before pubs=====================================")
         #publishers and receiver for high level controller
         self.task_status_pub = self.create_publisher(TaskStatus,'VRU_robot_controller/TaskStatus',10)
         self.command_sub = self.create_subscription(Task,'VRU_robot_controller/Task',self.command_callback,10)
@@ -72,9 +74,11 @@ class OffboardControl(Node):
         #publishers for rviz2
         self.path_pub = self.create_publisher(Path,"vru_current_path",10)
         self.reference_path_pub = self.create_publisher(Path,"vru_reference_path",10)
+        self.get_logger().info("after pubs=====================================")
         #members for the node
         self.dt = 0.1
         self.timer = self.create_timer(self.dt, self.publish_point)
+        self.get_logger().info("after timer=====================================")
 
         self.robot_state = State()
         self.path_msg = Path()
@@ -83,12 +87,13 @@ class OffboardControl(Node):
         self.current_task = Task()
         self.task_status = TaskStatus()
         self.robot_status = Status()
+        self.get_logger().info("after all=====================================")
     def battery_callback(self,msg:BatteryState):
         self.robot_status.battary_status = msg.percentage
    
                                       
     def command_callback(self,msg:Task):
-        self.get_logger().info("Recived task for executing with ID: "  + str(msg.task_id))
+        # self.get_logger().info("Recived task for executing with ID: "  + str(msg.task_id))
         self.current_task = msg
         ## process the task
         self.process_task(msg)
@@ -161,7 +166,10 @@ class OffboardControl(Node):
                 self.state = MissionState.stopped
 
     def publish_point(self):
+        self.get_logger().info("WHATTTTTTTTTTTTTTTTTTTTTTTTT=====================================")
+        self.get_logger().info("trying to publish local.")
         if self.state == MissionState.path_following:
+            self.get_logger().info("shoubl be pubbing.")
             self.local_pos_pub.publish(self.current_chasing_point)
 
     def set_offboard_mode(self):
@@ -173,7 +181,7 @@ class OffboardControl(Node):
             os.system('ros2 service call /mavros/set_mode mavros_msgs/srv/SetMode "{custom_mode: "MANUAL"}"')
            
     def vehicle_status_callback(self, msg:State):
-        self.get_logger().info("state: " + str(msg))
+        # self.get_logger().info("state: " + str(msg))
         if self.state == MissionState.path_following:
             self.get_logger().info("following path")
             self.reference_path_pub.publish(self.reference_path_msg)
@@ -202,7 +210,7 @@ def main(args=None):
 
     rclpy.spin(offboard_control)
 
-    offboard_control.destroy_node()
+    # offboard_control.destroy_node() 
     rclpy.shutdown()
 
 
