@@ -15,7 +15,42 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(vru_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(mavros_msgs REQUIRED)
+
+#-----------------------------------------------------
+include_directories(include/${PROJECT_NAME}/)
+
+add_executable(mavros_offboard_controller
+  src/mavros_offboard_main.cpp 
+  src/mavros_offboard_controller.cpp
+)
+
+ament_target_dependencies( mavros_offboard_controller
+  rclcpp
+  std_msgs
+  vru_msgs
+  geometry_msgs
+  mavros_msgs
+  nav_msgs
+)
+
+target_include_directories(mavros_offboard_controller PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}>
+  $<INSTALL_INTERFACE:include>
+)
+
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
+
+install(TARGETS mavros_offboard_controller
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+
+
 #-----------------------------------------------------
 add_executable(hardware_controller src/hardware_controller.cpp)
 target_include_directories(hardware_controller PUBLIC
