@@ -6,9 +6,6 @@
 // https://docs.px4.io/main/en/ros/mavros_offboard_cpp.html For those unaware:
 // BTW: this is the header file, the source file (where the implementation of the header code is) is in the src folder.
 
-//TODO:
-// is the commandbool bugged? need to check.
-
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "mavros_msgs/msg/state.hpp"
 #include "mavros_msgs/srv/command_bool.hpp"

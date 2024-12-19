@@ -108,3 +108,9 @@ source ~/autoware/install/setup.bash
 source ~/ros2_vru_system/install/setup.bash 
 ros2 launch basic_mobile_robot vru_system.launch.py
 ```
+
+TODO:
+Edit the parameters so that the robot may arm without checks: https://diydrones.com/forum/topics/can-t-disable-pre-arm-checks
+
+check if the local pos is correctly published
+finish up the code

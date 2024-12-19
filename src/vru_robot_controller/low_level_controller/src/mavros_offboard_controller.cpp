@@ -30,16 +30,20 @@ void mavros_offboard_controller::state_callback(const mavros_msgs::msg::State& m
 {
   current_state = msg;
 
-  if(!msg.armed)
+  if(!msg.armed)//TODO: This is probably not a safe way to do arm the robot, its probably better if arming is done via the GUI.
   {
-    std::string command = "ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool \"{value: True}\"";//TODO: this is scuffed, check if works.
-    system(command.c_str());
+    auto request = std::make_shared<mavros_msgs::srv::CommandBool::Request>();
+    request->value = true;
+
+    arming_client->async_send_request(request);
   }
 
   if(msg.mode != "OFFBOARD")
   {
-    std::string command = "ros2 service call /mavros/set_mode mavros_msgs/srv/SetMode \"{custom_mode: \"OFFBOARD\"}\"";//TODO: this is scuffed, check if works.
-    system(command.c_str());
+    auto request = std::make_shared<mavros_msgs::srv::SetMode::Request>();
+    request->custom_mode = "OFFBOARD";
+
+    mode_setting_client->async_send_request(request);
   }
 
 }
