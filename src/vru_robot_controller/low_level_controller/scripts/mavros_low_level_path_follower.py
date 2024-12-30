@@ -14,6 +14,7 @@ from rclpy.clock import Clock
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy, QoSDurabilityPolicy
 from geometry_msgs.msg import PoseStamped
 from mavros_msgs.msg import State
+from mavros_msgs.srv import CommandBool, SetMode
 from nav_msgs.msg import Odometry,Path
 from vru_msgs.msg import Task,TaskStatus,Status
 import os
@@ -62,19 +63,28 @@ class OffboardControl(Node):
             '/mavros/battery',
             self.battery_callback,
             qos_profile)
+            
         
         self.get_logger().info("before pubs=====================================")
+        
         #publishers and receiver for high level controller
         self.task_status_pub = self.create_publisher(TaskStatus,'VRU_robot_controller/TaskStatus',10)
         self.command_sub = self.create_subscription(Task,'VRU_robot_controller/Task',self.command_callback,10)
         self.robot_status_pub = self.create_publisher(Status,'VRU_robot_controller/Status',10)
+        
         #publishers for mavros
         self.local_pos_pub = self.create_publisher(PoseStamped,"mavros/setpoint_position/local",10)
         self.local_traj_pub = self.create_publisher(Path,"mavros/setpoint_trajectory/desired",10)
+        
+        #clients for mavros
+        self.arming_client = self.create_client(CommandBool, 'mavros/cmd/arming')
+        self.mode_client = self.create_client(SetMode, 'mavros/set_mode')
+        
         #publishers for rviz2
         self.path_pub = self.create_publisher(Path,"vru_current_path",10)
         self.reference_path_pub = self.create_publisher(Path,"vru_reference_path",10)
         self.get_logger().info("after pubs=====================================")
+        
         #members for the node
         self.dt = 0.1
         self.timer = self.create_timer(self.dt, self.publish_point)
@@ -174,11 +184,28 @@ class OffboardControl(Node):
 
     def set_offboard_mode(self):
         if self.state == MissionState.path_following:
-            os.system('ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool "{value: True}"')
-            os.system('ros2 service call /mavros/set_mode mavros_msgs/srv/SetMode "{custom_mode: "OFFBOARD"}"')
+            self.arming_request = CommandBool.Request()
+            self.arming_request.value = True
+            self.arming_client.call_async(self.arming_request)
+            
+            self.mode_request = SetMode.Request()
+            self.mode_request.custom_mode("OFFBOARD")
+            self.mode_client.call_async(self.mode_request)
+            
+            # os.system('ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool "{value: True}"')
+            # os.system('ros2 service call /mavros/set_mode mavros_msgs/srv/SetMode "{custom_mode: "OFFBOARD"}"')
         if self.state == MissionState.stopped:
-            os.system('ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool "{value: False}"')
-            os.system('ros2 service call /mavros/set_mode mavros_msgs/srv/SetMode "{custom_mode: "MANUAL"}"')
+            
+            arming_request = CommandBool.Request()
+            arming_request.value = False
+            self.arming_client.call_async(arming_request)
+            
+            mode_request = SetMode.Request()
+            mode_request.custom_mode("MANUAL")
+            self.mode_client.call_async(mode_request)
+            
+            # os.system('ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool "{value: False}"')
+            # os.system('ros2 service call /mavros/set_mode mavros_msgs/srv/SetMode "{custom_mode: "MANUAL"}"')
            
     def vehicle_status_callback(self, msg:State):
         # self.get_logger().info("state: " + str(msg))
@@ -190,14 +217,20 @@ class OffboardControl(Node):
             # automatically set the offboard mode and arm the vehicle , this could be dangerous
             if not msg.armed:
                 self.get_logger().info("arming")
-                p = Process(target=lambda:os.system('ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool "{value: True}"'), args=())
-                p.start()
-                p.join()
+                arming_request = CommandBool.Request()
+                arming_request.value = False
+                self.arming_client.call_async(arming_request)
+                # p = Process(target=lambda:os.system('ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool "{value: True}"'), args=())
+                # p.start()
+                # p.join()
             if msg.mode != "OFFBOARD":
                 self.get_logger().info("setting offboard mode")
-                p = Process(target=lambda:os.system('ros2 service call /mavros/set_mode mavros_msgs/srv/SetMode "{custom_mode: "OFFBOARD"}"'), args=())
-                p.start()
-                p.join()
+                mode_request = SetMode.Request()
+                mode_request.custom_mode("OFFBOARD")
+                self.mode_client.call_async(mode_request)
+                # p = Process(target=lambda:os.system('ros2 service call /mavros/set_mode mavros_msgs/srv/SetMode "{custom_mode: "OFFBOARD"}"'), args=())
+                # p.start()
+                # p.join()
         # if self.state == MissionState.stopped:
         #     if msg.armed:
         #         os.system('ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool "{value: False}"')

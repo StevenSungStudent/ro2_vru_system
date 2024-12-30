@@ -109,8 +109,13 @@ source ~/ros2_vru_system/install/setup.bash
 ros2 launch basic_mobile_robot vru_system.launch.py
 ```
 
-TODO:
+## TODO:
 Edit the parameters so that the robot may arm without checks: https://diydrones.com/forum/topics/can-t-disable-pre-arm-checks
 
 check if the local pos is correctly published
-finish up the code
+finish up the code / fix up the old code
+
+The pos messages that are sent by the old code are the same? This is how it should be, the same pos needs to be sent over and over untill its reached
+shouldn't the pos msgs be sent all the time while the robot is in offboard mode?
+the px4 need constant messages on the setpoint_position/local topic, these messages contain the DESIRED location, the px4 will drive to those positions by itself.
+why does the robot not move to the desired position? message wrong?
