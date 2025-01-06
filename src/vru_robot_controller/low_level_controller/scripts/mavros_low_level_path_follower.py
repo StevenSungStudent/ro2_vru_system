@@ -155,7 +155,7 @@ class OffboardControl(Node):
         if self.state == MissionState.path_following:            
             # if the current point is reached, update the next point
             
-            if (temp and abs(msg.pose.pose.position.x - self.current_chasing_point.pose.position.x) < (ROBOT_RADIUS * 2)) and (abs(msg.pose.pose.position.y - self.current_chasing_point.pose.position.y) < (ROBOT_RADIUS * 2)):
+            if (abs(msg.pose.pose.position.x - self.current_chasing_point.pose.position.x) < (ROBOT_RADIUS * 2)) and (abs(msg.pose.pose.position.y - self.current_chasing_point.pose.position.y) < (ROBOT_RADIUS * 2)):
     
                 self.get_logger().info("Path_following, updating next point")
                 self.path_msg.poses.pop(0)
