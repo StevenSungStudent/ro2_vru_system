@@ -155,3 +155,11 @@ ros2 topic pub /mavros/setpoint_position/local geometry_msgs/msg/PoseStamped "{
 }" --rate 12
 
 ```
+
+The code does not work properly when using the physical px4, when using the sim it works fine? 
+Also when doing the following, it works fine for some reason? why?:
+1. start mavros
+2. start sim
+3. start code
+4. stop sim and set mavros to usb port
+5. use the code
