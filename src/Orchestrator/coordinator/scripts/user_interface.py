@@ -807,7 +807,7 @@ class subWindow(Ui_MainWindow, QMainWindow):
     def closeEvent(self, event):
         rclpy.shutdown()
     def armming_vru(self):
-        os.system('ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool "{value: True}"')
+        os.system('ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool "{value: True}"') #TODO: make these service calls properly with clients and stuff, this lags the shit out of the GUI.
         
     def disarming_vru(self):
         os.system('ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool "{value: False}"')

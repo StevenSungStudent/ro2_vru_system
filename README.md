@@ -102,7 +102,7 @@ Run the mavros in the project directory:
 ros2 run mavros mavros_node --ros-args --param fcu_url:=udp://:14540@ -r tf:=/px4/tf  -r tf_static:=/px4/tf_static 
 ```
 
-Launch the vru system.
+Launch the vru system. NOTE check if the source directories are correct.
 ```sh  
 source ~/autoware/install/setup.bash
 source ~/ros2_vru_system/install/setup.bash 
@@ -118,4 +118,40 @@ finish up the code / fix up the old code
 The pos messages that are sent by the old code are the same? This is how it should be, the same pos needs to be sent over and over untill its reached
 shouldn't the pos msgs be sent all the time while the robot is in offboard mode?
 the px4 need constant messages on the setpoint_position/local topic, these messages contain the DESIRED location, the px4 will drive to those positions by itself.
-why does the robot not move to the desired position? message wrong?
+why does the robot not move to the desired position? message wrong? maybe look into wat that local position NED thing is about.
+
+arms fine, goes to offboard mode fine. message headers? also check if the measured odom pos of the robot matches the z value of the message, maybe its trying to fly or something? what does the 'guided' state mean?
+
+try just publishing to the setpoint topic in a loop at 3 hz via the commandline. 
+Airframes messed up? redo it?
+vru in the sim?
+
+must be an issue in the simulator. The issue is with the simulator.
+
+put the sim up in a repo too.
+
+x and y are mixed up in the GUI?
+
+fail safe active?
+
+try with raw local pos?
+
+errors on start up, issue? doubt it.
+
+check rqt, see what listens to setpoints.
+
+
+
+
+```sh
+ros2 topic pub /mavros/setpoint_position/local geometry_msgs/msg/PoseStamped "{
+  header: {
+    frame_id: 'odom'
+  },
+  pose: {
+    position: { x: 20.0, y: 30.0, z: 1.0 },
+    orientation: { x: 0.0, y: 0.0, z: 0.0, w: 1.0 }
+  }
+}" --rate 12
+
+```

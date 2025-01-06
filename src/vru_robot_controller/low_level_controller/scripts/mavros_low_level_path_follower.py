@@ -33,7 +33,7 @@ class OffboardControl(Node):
 
     def __init__(self):
         super().__init__('offcontrol_node_mavros')
-        self.get_logger().info("TEST=====================================")
+        # self.get_logger().info("TEST=====================================")
         
         self.state = MissionState.stopped
 
@@ -65,7 +65,7 @@ class OffboardControl(Node):
             qos_profile)
             
         
-        self.get_logger().info("before pubs=====================================")
+        # self.get_logger().info("before pubs=====================================")
         
         #publishers and receiver for high level controller
         self.task_status_pub = self.create_publisher(TaskStatus,'VRU_robot_controller/TaskStatus',10)
@@ -83,12 +83,12 @@ class OffboardControl(Node):
         #publishers for rviz2
         self.path_pub = self.create_publisher(Path,"vru_current_path",10)
         self.reference_path_pub = self.create_publisher(Path,"vru_reference_path",10)
-        self.get_logger().info("after pubs=====================================")
+        # self.get_logger().info("after pubs=====================================")
         
         #members for the node
         self.dt = 0.1
         self.timer = self.create_timer(self.dt, self.publish_point)
-        self.get_logger().info("after timer=====================================")
+        # self.get_logger().info("after timer=====================================")
 
         self.robot_state = State()
         self.path_msg = Path()
@@ -97,7 +97,7 @@ class OffboardControl(Node):
         self.current_task = Task()
         self.task_status = TaskStatus()
         self.robot_status = Status()
-        self.get_logger().info("after all=====================================")
+        # self.get_logger().info("after all=====================================")
     def battery_callback(self,msg:BatteryState):
         self.robot_status.battary_status = msg.percentage
    
@@ -138,7 +138,7 @@ class OffboardControl(Node):
         self.current_chasing_point.pose.position.z = copy.deepcopy(self.path_msg.poses[0].pose.position.z)
     
         self.current_chasing_point.header.stamp = self.get_clock().now().to_msg()
-        self.current_chasing_point.header.frame_id = "odom_vru"
+        self.current_chasing_point.header.frame_id = "map"
 
 
 
@@ -151,9 +151,11 @@ class OffboardControl(Node):
         self.robot_status.move_direction_y = self.current_chasing_point.pose.position.y
         self.robot_status.current_task_status = self.task_status
         self.robot_status_pub.publish(self.robot_status)
+
         if self.state == MissionState.path_following:            
             # if the current point is reached, update the next point
-            if (abs(msg.pose.pose.position.x - self.current_chasing_point.pose.position.x) < (ROBOT_RADIUS * 2)) and (abs(msg.pose.pose.position.y - self.current_chasing_point.pose.position.y) < (ROBOT_RADIUS * 2)):
+            
+            if (temp and abs(msg.pose.pose.position.x - self.current_chasing_point.pose.position.x) < (ROBOT_RADIUS * 2)) and (abs(msg.pose.pose.position.y - self.current_chasing_point.pose.position.y) < (ROBOT_RADIUS * 2)):
     
                 self.get_logger().info("Path_following, updating next point")
                 self.path_msg.poses.pop(0)
@@ -162,9 +164,11 @@ class OffboardControl(Node):
                 try:
                     self.current_chasing_point.pose.position.x = copy.deepcopy(self.path_msg.poses[0].pose.position.x)
                     self.current_chasing_point.pose.position.y = copy.deepcopy(self.path_msg.poses[0].pose.position.y)
-                    self.current_chasing_point.pose.position.z = copy.deepcopy(self.path_msg.poses[0].pose.position.z)
+                    self.current_chasing_point.pose.position.z = copy.deepcopy(msg.pose.pose.position.z)
+                    # self.current_chasing_point.pose.position.z = copy.deepcopy(self.path_msg.poses[0].pose.position.z)
+                    # self.current_chasing_point.pose.position.z = 0
                     self.current_chasing_point.header.stamp = self.get_clock().now().to_msg()
-                    self.current_chasing_point.header.frame_id = "odom_vru"
+                    self.current_chasing_point.header.frame_id = "map"
                 except:
                     pass
             if len(self.path_msg.poses) == 0:
@@ -176,10 +180,11 @@ class OffboardControl(Node):
                 self.state = MissionState.stopped
 
     def publish_point(self):
-        self.get_logger().info("WHATTTTTTTTTTTTTTTTTTTTTTTTT=====================================")
-        self.get_logger().info("trying to publish local.")
+        # self.get_logger().info("WHATTTTTTTTTTTTTTTTTTTTTTTTT=====================================")
+        # self.get_logger().info("trying to publish local.")
         if self.state == MissionState.path_following:
-            self.get_logger().info("shoubl be pubbing.")
+            # self.get_logger().info("shoubl be pubbing.")
+            self.current_chasing_point.header.stamp = self.get_clock().now().to_msg()
             self.local_pos_pub.publish(self.current_chasing_point)
 
     def set_offboard_mode(self):
@@ -215,19 +220,21 @@ class OffboardControl(Node):
             self.local_traj_pub.publish(self.reference_path_msg)
             self.robot_state = msg
             # automatically set the offboard mode and arm the vehicle , this could be dangerous
-            if not msg.armed:
-                self.get_logger().info("arming")
-                arming_request = CommandBool.Request()
-                arming_request.value = False
-                self.arming_client.call_async(arming_request)
+            # if not msg.armed:
+            #     self.get_logger().info("arming")
+            #     arming_request = CommandBool.Request()
+            #     arming_request.value = True
+            #     self.arming_client.call_async(arming_request)
+                
                 # p = Process(target=lambda:os.system('ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool "{value: True}"'), args=())
                 # p.start()
                 # p.join()
-            if msg.mode != "OFFBOARD":
-                self.get_logger().info("setting offboard mode")
-                mode_request = SetMode.Request()
-                mode_request.custom_mode("OFFBOARD")
-                self.mode_client.call_async(mode_request)
+            # if msg.mode != "OFFBOARD":
+            #     self.get_logger().info("setting offboard mode")
+            #     mode_request = SetMode.Request()
+            #     mode_request.custom_mode("OFFBOARD")
+            #     self.mode_client.call_async(mode_request)
+                
                 # p = Process(target=lambda:os.system('ros2 service call /mavros/set_mode mavros_msgs/srv/SetMode "{custom_mode: "OFFBOARD"}"'), args=())
                 # p.start()
                 # p.join()
