@@ -1,4 +1,4 @@
-#include "mavros_offboard_controller.hpp";
+#include "mavros_offboard_controller.hpp"
 
 int main(int argc, char const *argv[])
 {
