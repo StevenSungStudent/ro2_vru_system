@@ -10,6 +10,7 @@
 //There is a spelling mistake in the code: compleated.
 //Figure out what an acceptable error radius is. 
 //The rviz stuff needs to be added / published.
+//node crashes after 2
 
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "mavros_msgs/msg/state.hpp"
@@ -35,16 +36,19 @@ public:
   ~mavros_offboard_controller();
 
 private:
-  //Enum
+  // Enum
   enum mission_state{
     PATH_FOLLOWING,
     STOPPED
   };
 
 
+
   // Variables
   const unsigned short publishing_frequency;
   const double error_radius;                                                              // The allowed error around the waypoints, in meters. So how close the robot has to be to the waypoint before it decides it has reached it.
+
+  rclcpp::QoS qos_profile;
 
   mavros_msgs::msg::State current_state;                                                  // TODO: maybe redundant.
   nav_msgs::msg::Odometry current_position;

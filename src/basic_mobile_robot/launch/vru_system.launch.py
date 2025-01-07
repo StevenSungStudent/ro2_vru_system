@@ -111,9 +111,16 @@ def generate_launch_description():
     remappings=remappings,
     arguments=[default_model_path])
 
+  # vru_low_level_controller_cmd = Node(
+  #   package='low_level_controller',
+  #   executable='mavros_low_level_path_follower.py',
+  #   namespace=namespace,
+  #   parameters=[{'use_sim_time': use_sim_time, }],
+  # )
+  
   vru_low_level_controller_cmd = Node(
     package='low_level_controller',
-    executable='mavros_low_level_path_follower.py',
+    executable='mavros_offboard_controller',
     namespace=namespace,
     parameters=[{'use_sim_time': use_sim_time, }],
   )

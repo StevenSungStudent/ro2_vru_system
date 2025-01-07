@@ -11,18 +11,23 @@ using std::placeholders::_1;
         // self.robot_status_pub = self.create_publisher(Status,'VRU_robot_controller/Status',10)
         // self.local_traj_pub = self.create_publisher(Path,"mavros/setpoint_trajectory/desired",10)
 
-mavros_offboard_controller::mavros_offboard_controller() : Node("mavros_offboard_controller"), publishing_frequency(20), error_radius(2), current_mission_state(STOPPED){
+mavros_offboard_controller::mavros_offboard_controller() : Node("mavros_offboard_controller"), publishing_frequency(20), error_radius(2), qos_profile(rclcpp::KeepLast(10)), current_mission_state(STOPPED){
   RCLCPP_INFO(rclcpp::get_logger("mavros_offboard_controller"), "Controller initialized");
 
-  // Publishers, subscribers and clients.
-  state_subscriber = this->create_subscription<mavros_msgs::msg::State>( "mavros/state", 10, std::bind(&mavros_offboard_controller::state_callback, this, _1));			
-  odometry_subscriber = this->create_subscription<nav_msgs::msg::Odometry>( "mavros/local_position/odom", 10, std::bind(&mavros_offboard_controller::odometry_callback, this, _1));
+  // QoS profile 
+  qos_profile.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
+  qos_profile.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
 
-  local_position_publisher = this->create_publisher<geometry_msgs::msg::PoseStamped>( "mavros/setpoint_position/local", 10);
+  // Publishers, subscribers and clients.
+  state_subscriber = this->create_subscription<mavros_msgs::msg::State>( "mavros/state", qos_profile, std::bind(&mavros_offboard_controller::state_callback, this, _1));			
+  odometry_subscriber = this->create_subscription<nav_msgs::msg::Odometry>( "mavros/local_position/odom", qos_profile, std::bind(&mavros_offboard_controller::odometry_callback, this, _1));
+  command_subscriber = this->create_subscription<vru_msgs::msg::Task>("VRU_robot_controller/Task", 10, std::bind(&mavros_offboard_controller::command_callback, this, _1));
+
+  local_position_publisher = this->create_publisher<geometry_msgs::msg::PoseStamped>( "mavros/setpoint_position/local", qos_profile);
   status_publisher = this->create_publisher<vru_msgs::msg::Status>("VRU_robot_controller/Status", 10);
 
-  arming_client = this->create_client<mavros_msgs::srv::CommandBool>("mavros/cmd/arming");	
-  mode_setting_client = this->create_client<mavros_msgs::srv::SetMode>("mavros/set_mode");
+  arming_client = this->create_client<mavros_msgs::srv::CommandBool>("mavros/cmd/arming", qos_profile.get_rmw_qos_profile());	
+  mode_setting_client = this->create_client<mavros_msgs::srv::SetMode>("mavros/set_mode", qos_profile.get_rmw_qos_profile());
   timer = this->create_wall_timer(std::chrono::milliseconds(publishing_frequency),std::bind(&mavros_offboard_controller::local_position_callback, this));
 
   current_task_status.status_id = 0;
@@ -55,21 +60,12 @@ void mavros_offboard_controller::state_callback(const mavros_msgs::msg::State& m
 
     mode_setting_client->async_send_request(request);
   }
-
 }
 
 void mavros_offboard_controller::odometry_callback(const nav_msgs::msg::Odometry& msg) //updates the desired waypoint.
 {
   static unsigned long long path_index = 0;
   current_position = msg;
-
-
-        //   self.robot_status.location_x = msg.pose.pose.position.x
-        // self.robot_status.location_y = msg.pose.pose.position.y
-        // self.robot_status.move_direction_x = self.current_chasing_point.pose.position.x
-        // self.robot_status.move_direction_y = self.current_chasing_point.pose.position.y
-        // self.robot_status.current_task_status = self.task_status
-        // self.robot_status_pub.publish(self.robot_status)
 
   if(current_mission_state == PATH_FOLLOWING){
     if((abs(msg.pose.pose.position.x - desired_waypoint.pose.position.x) < error_radius) && (abs(msg.pose.pose.position.y - desired_waypoint.pose.position.y) < error_radius)){
@@ -89,7 +85,7 @@ void mavros_offboard_controller::odometry_callback(const nav_msgs::msg::Odometry
     path_index = 0;
     current_task_status.compleated = true;
     current_mission_state = STOPPED;
-    RCLCPP_INFO(rclcpp::get_logger("mavros_offboard_controller"), "Path completed, destination reached.");
+   
   }
 }
 
@@ -97,11 +93,12 @@ void mavros_offboard_controller::odometry_callback(const nav_msgs::msg::Odometry
 //That way the robot stays in offboard mode, but idk if that wanted.
 void mavros_offboard_controller::local_position_callback()
 {
+
   if(current_mission_state == PATH_FOLLOWING){
     desired_waypoint.header.stamp = this->get_clock()->now();
     local_position_publisher->publish(desired_waypoint);
   }
-}
+} 
 
 void mavros_offboard_controller::command_callback(const vru_msgs::msg::Task & msg)//TODO: this feels kinda redundant.
 {
@@ -117,17 +114,23 @@ void mavros_offboard_controller::process_task(const vru_msgs::msg::Task & task)
 {
   current_task_status.status_id += 1;
 
-  current_task_status.current_task = current_task;
+  std::cout << task.task_type << std::endl;
+
+
+  
   if(task.task_type == task.TYPE_PATH_FOLLOWING){
     current_mission_state = PATH_FOLLOWING;
+    current_task_status.current_task = current_task;
     current_task_status.compleated = false;
   } 
   else if(task.task_type == task.TYPE_IDLE){
     current_mission_state = STOPPED;
+    current_task_status.current_task = current_task;
     current_task_status.compleated = true;
+
+    task_status_publisher->publish(current_task_status);
   }
 
-  task_status_publisher->publish(current_task_status);
 }
 
 void mavros_offboard_controller::load_path(const nav_msgs::msg::Path & path)
@@ -146,6 +149,5 @@ void mavros_offboard_controller::publish_status(const nav_msgs::msg::Odometry& m
   robot_status.current_task_status = current_task_status;
 
   //TODO: the message also wants the battery state, need to figure out what package that message type belongs to.
-
   status_publisher->publish(robot_status);
 }
