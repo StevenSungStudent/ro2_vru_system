@@ -145,5 +145,7 @@ void mavros_offboard_controller::publish_status(const nav_msgs::msg::Odometry& m
   robot_status.move_direction_y = desired_waypoint.pose.position.y;
   robot_status.current_task_status = current_task_status;
 
+  //TODO: the message also wants the battery state, need to figure out what package that message type belongs to.
+
   status_publisher->publish(robot_status);
 }
