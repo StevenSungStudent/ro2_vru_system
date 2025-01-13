@@ -30,6 +30,7 @@ from nav_msgs.msg import Odometry, Path
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy, QoSDurabilityPolicy
 from vru_msgs.msg import Task, TaskList, Events,Status
 from mavros_msgs.msg import State
+from mavros_msgs.srv import CommandBool, SetMode
 from scipy import interpolate
 try:
     from .coordinator_layout import Ui_MainWindow
@@ -214,6 +215,10 @@ class Orchestrator_ui(Node):
             '/mavros/state',
             self.vehicle_status_callback,
             qos_profile)
+        
+        self.arming_client = self.create_client(CommandBool, 'mavros/cmd/arming')
+        self.mode_client = self.create_client(SetMode, 'mavros/set_mode')
+        
         # system feedback
         self.create_subscription(Status,'VRU_robot_controller/Status', self.vru_status_callback, 10)
         self.create_subscription(Status,'Dut/status', self.dut_status_callback, 10)
@@ -807,17 +812,38 @@ class subWindow(Ui_MainWindow, QMainWindow):
     def closeEvent(self, event):
         rclpy.shutdown()
     def armming_vru(self):
-        os.system('ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool "{value: True}"') #TODO: make these service calls properly with clients and stuff, this lags the shit out of the GUI.
+        # os.system('ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool "{value: True}"') #TODO: make these service calls properly with clients and stuff, this lags the shit out of the GUI.
+        
+        arming_request = CommandBool.Request()
+        arming_request.value = True
+        self.ros2_handler.arming_client.call_async(arming_request)
         
     def disarming_vru(self):
-        os.system('ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool "{value: False}"')
+        # os.system('ros2 service call /mavros/cmd/arming mavros_msgs/srv/CommandBool "{value: False}"')
+        
+        arming_request = CommandBool.Request()
+        arming_request.value = False
+        self.ros2_handler.arming_client.call_async(arming_request)
 
     def set_manual_vru_mode(self):
-        os.system('ros2 service call /mavros/set_mode mavros_msgs/srv/SetMode "{custom_mode: "MANUAL"}"')
+        # os.system('ros2 service call /mavros/set_mode mavros_msgs/srv/SetMode "{custom_mode: "MANUAL"}"')
+        
+        mode_request = SetMode.Request()
+        mode_request.custom_mode = "MANUAL"
+        self.ros2_handler.mode_client.call_async(mode_request)
+        
     def set_hold_vru_mode(self):
-        os.system('ros2 service call /mavros/set_mode mavros_msgs/srv/SetMode "{custom_mode: "STABILIZED"}"')
+        # os.system('ros2 service call /mavros/set_mode mavros_msgs/srv/SetMode "{custom_mode: "STABILIZED"}"')
+        mode_request = SetMode.Request()
+        mode_request.custom_mode = "STABILIZED"
+        self.ros2_handler.mode_client.call_async(mode_request)
+        
     def set_return_vru_mode(self):
-        os.system('ros2 service call /mavros/set_mode mavros_msgs/srv/SetMode "{custom_mode: "OFFBOARD"}"')
+        # os.system('ros2 service call /mavros/set_mode mavros_msgs/srv/SetMode "{custom_mode: "OFFBOARD"}"')
+        mode_request = SetMode.Request()
+        mode_request.custom_mode = "OFFBOARD"
+        self.ros2_handler.mode_client.call_async(mode_request)
+        
     def updateGUi(self):
         self.running_breath()
         color = "background-color: rgb("+str(self.R) + \
