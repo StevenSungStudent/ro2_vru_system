@@ -10,7 +10,7 @@
 //There is a spelling mistake in the code: compleated.
 //Figure out what an acceptable error radius is. 
 //The rviz stuff needs to be added / published.
-//node crashes after 2
+//Huge error on the position, gps calibration? might just be fixed when the GPS that is meant to be used is implemented.
 
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "mavros_msgs/msg/state.hpp"

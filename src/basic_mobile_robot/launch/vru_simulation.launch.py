@@ -1,4 +1,5 @@
 # Description: Launch file for the simulation of the VRU rover in Gazebo
+# NOTE: very old launch file, not tested, not sure if it works.
 
 import os
 from launch import LaunchDescription

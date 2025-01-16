@@ -1,4 +1,5 @@
 # Description: Launch file for the simulation of the VRU rover in Gazebo
+# NOTE: the 'original' launch file. Was split up into vru_offboard.launch.py and orchestrator.launch.py
 
 import os
 from launch import LaunchDescription
