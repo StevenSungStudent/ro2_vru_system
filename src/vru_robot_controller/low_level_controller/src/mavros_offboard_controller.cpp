@@ -6,11 +6,6 @@ using std::placeholders::_1;
 //============================================================================================
 //CONSTRUCTOR AND DESTRUCTOR
 
-        //   self.task_status_pub = self.create_publisher(TaskStatus,'VRU_robot_controller/TaskStatus',10)
-        // self.command_sub = self.create_subscription(Task,'VRU_robot_controller/Task',self.command_callback,10)
-        // self.robot_status_pub = self.create_publisher(Status,'VRU_robot_controller/Status',10)
-        // self.local_traj_pub = self.create_publisher(Path,"mavros/setpoint_trajectory/desired",10)
-
 mavros_offboard_controller::mavros_offboard_controller() : Node("mavros_offboard_controller"), publishing_frequency(20), error_radius(2), qos_profile(rclcpp::KeepLast(10)), current_mission_state(STOPPED){
   RCLCPP_INFO(rclcpp::get_logger("mavros_offboard_controller"), "Controller initialized");
 
@@ -43,23 +38,23 @@ mavros_offboard_controller::~mavros_offboard_controller() {
 //CALLBACKS
 void mavros_offboard_controller::state_callback(const mavros_msgs::msg::State& msg)
 {
-  current_state = msg;
+  // current_state = msg;
 
-  if(!msg.armed)//TODO: This is probably not a safe way to do arm the robot, its probably better if arming is done via the GUI.
-  {
-    auto request = std::make_shared<mavros_msgs::srv::CommandBool::Request>();
-    request->value = true;
+  // if(!msg.armed)//TODO: This is probably not a safe way to do arm the robot, its probably better if arming is done via the GUI.
+  // {
+  //   auto request = std::make_shared<mavros_msgs::srv::CommandBool::Request>();
+  //   request->value = true;
 
-    arming_client->async_send_request(request);
-  }
+  //   arming_client->async_send_request(request);
+  // }
 
-  if(msg.mode != "OFFBOARD")
-  {
-    auto request = std::make_shared<mavros_msgs::srv::SetMode::Request>();
-    request->custom_mode = "OFFBOARD";
+  // if(msg.mode != "OFFBOARD")
+  // {
+  //   auto request = std::make_shared<mavros_msgs::srv::SetMode::Request>();
+  //   request->custom_mode = "OFFBOARD";
 
-    mode_setting_client->async_send_request(request);
-  }
+  //   mode_setting_client->async_send_request(request);
+  // }
 }
 
 void mavros_offboard_controller::odometry_callback(const nav_msgs::msg::Odometry& msg) //updates the desired waypoint.
@@ -93,9 +88,11 @@ void mavros_offboard_controller::odometry_callback(const nav_msgs::msg::Odometry
 //That way the robot stays in offboard mode, but idk if that wanted.
 void mavros_offboard_controller::local_position_callback()
 {
-
+  RCLCPP_INFO(rclcpp::get_logger("mavros_offboard_controller"), "trying to pub.");
   if(current_mission_state == PATH_FOLLOWING){
+    RCLCPP_INFO(rclcpp::get_logger("mavros_offboard_controller"), "pubbing");
     desired_waypoint.header.stamp = this->get_clock()->now();
+    desired_waypoint.header.frame_id = "map";
     local_position_publisher->publish(desired_waypoint);
   }
 } 
@@ -122,13 +119,15 @@ void mavros_offboard_controller::process_task(const vru_msgs::msg::Task & task)
     current_mission_state = PATH_FOLLOWING;
     current_task_status.current_task = current_task;
     current_task_status.compleated = false;
+
+    //task_status_publisher->publish(current_task_status); //TODO: fix this, this crashes the node, why?
   } 
   else if(task.task_type == task.TYPE_IDLE){
     current_mission_state = STOPPED;
     current_task_status.current_task = current_task;
     current_task_status.compleated = true;
 
-    task_status_publisher->publish(current_task_status);
+    // task_status_publisher->publish(current_task_status);
   }
 
 }
