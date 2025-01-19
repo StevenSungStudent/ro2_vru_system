@@ -1,0 +1,6 @@
+
+/build
+/install
+/log
+/.vscode
+/src/Orchestrator/coordinator/scripts/__pycache__

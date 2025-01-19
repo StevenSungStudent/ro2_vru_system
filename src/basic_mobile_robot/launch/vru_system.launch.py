@@ -1,4 +1,5 @@
 # Description: Launch file for the simulation of the VRU rover in Gazebo
+# NOTE: the 'original' launch file. Was split up into vru_offboard.launch.py and orchestrator.launch.py
 
 import os
 from launch import LaunchDescription
@@ -111,9 +112,16 @@ def generate_launch_description():
     remappings=remappings,
     arguments=[default_model_path])
 
+  # vru_low_level_controller_cmd = Node(
+  #   package='low_level_controller',
+  #   executable='mavros_low_level_path_follower.py',
+  #   namespace=namespace,
+  #   parameters=[{'use_sim_time': use_sim_time, }],
+  # )
+  
   vru_low_level_controller_cmd = Node(
     package='low_level_controller',
-    executable='mavros_low_level_path_follower.py',
+    executable='mavros_offboard_controller',
     namespace=namespace,
     parameters=[{'use_sim_time': use_sim_time, }],
   )

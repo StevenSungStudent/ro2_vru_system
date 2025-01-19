@@ -15,38 +15,39 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(vru_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(mavros_msgs REQUIRED)
+
 #-----------------------------------------------------
-add_executable(hardware_controller src/hardware_controller.cpp)
-target_include_directories(hardware_controller PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-target_compile_features(hardware_controller PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+include_directories(include/${PROJECT_NAME}/)
 
-ament_target_dependencies(hardware_controller rclcpp std_msgs vru_msgs nav_msgs mavros_msgs)
+add_executable(mavros_offboard_controller
+  src/mavros_offboard_main.cpp 
+  src/mavros_offboard_controller.cpp
+)
 
-install(TARGETS hardware_controller
-  DESTINATION lib/${PROJECT_NAME})
+ament_target_dependencies( mavros_offboard_controller
+  rclcpp
+  std_msgs
+  vru_msgs
+  geometry_msgs
+  mavros_msgs
+  nav_msgs
+)
 
-install(PROGRAMS
+target_include_directories(mavros_offboard_controller PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/${PROJECT_NAME}>
+  $<INSTALL_INTERFACE:include>
+)
 
-	scripts/mavros_low_level_path_follower.py
+install(
+  DIRECTORY include/
+  DESTINATION include
+)
 
-  
+install(TARGETS mavros_offboard_controller
   DESTINATION lib/${PROJECT_NAME}
 )
-ament_python_install_package(${PROJECT_NAME})
-#-----------------------------------------------------
-add_executable(hardware_controller_interface src/hardware_controller_interface.cpp)
-target_include_directories(hardware_controller_interface PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-target_compile_features(hardware_controller_interface PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
-
-ament_target_dependencies(hardware_controller_interface rclcpp std_msgs vru_msgs)
-
-install(TARGETS hardware_controller_interface
-  DESTINATION lib/${PROJECT_NAME})
   
 #-----------------------------------------------------
 
