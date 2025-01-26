@@ -48,6 +48,40 @@ install(
 install(TARGETS mavros_offboard_controller
   DESTINATION lib/${PROJECT_NAME}
 )
+
+
+
+#-----------------------------------------------------
+add_executable(hardware_controller src/hardware_controller.cpp)
+target_include_directories(hardware_controller PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+target_compile_features(hardware_controller PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+
+ament_target_dependencies(hardware_controller rclcpp std_msgs vru_msgs nav_msgs mavros_msgs)
+
+install(TARGETS hardware_controller
+  DESTINATION lib/${PROJECT_NAME})
+
+install(PROGRAMS
+
+	scripts/mavros_low_level_path_follower.py
+
+  
+  DESTINATION lib/${PROJECT_NAME}
+)
+ament_python_install_package(${PROJECT_NAME})
+#-----------------------------------------------------
+add_executable(hardware_controller_interface src/hardware_controller_interface.cpp)
+target_include_directories(hardware_controller_interface PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+target_compile_features(hardware_controller_interface PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+
+ament_target_dependencies(hardware_controller_interface rclcpp std_msgs vru_msgs)
+
+install(TARGETS hardware_controller_interface
+  DESTINATION lib/${PROJECT_NAME})
   
 #-----------------------------------------------------
 
