@@ -33,6 +33,7 @@ This system includes the following features:
 - **Check the Time to collision**  tbd.
 
 ## Setting up the project
+Use this document when possible, as it is a more complete manual: https://hannl.sharepoint.com/:w:/r/teams/VRUproject/Gedeelde%20documenten/HAN_POD/Software%20Part/software_manual.docx?d=w9fa4175128b94655b7116e8515dda5b9&csf=1&web=1&e=WF4Xxj
 
 ### installing mavros
 mavros is a package which acts as an intermidiary layer between the ros2 network and the pixhawk network. This needs to be installed. More detailed information can be found here: https://docs.px4.io/main/en/ros/mavros_installation.html
